@@ -21,7 +21,11 @@ int main(void)
 	
 	deviceInit(&sysInfo);
 	#if TEST
+
+	
 	RCC_GetClocksFreq(&(sysInfo.clockInfo));
+	 USART_SendData(USART1, 0x01);
+
 	
 	#endif
 
