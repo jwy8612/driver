@@ -18,16 +18,23 @@
 int main(void)
 {
 	SYS_INFO sysInfo;
+	CAR_INFO  carInfo;
 	
 	deviceInit(&sysInfo);
 	#if TEST
 
 	
 	RCC_GetClocksFreq(&(sysInfo.clockInfo));
-	 USART_SendData(USART1, 0x01);
+	// USART_SendData(USART1, 0x01);
 
 	
 	#endif
+	while(1)
+	{
+		carCal(&carInfo);
+		carSpeedOut(&carInfo);
+		carDirectOut(&carInfo);
+	}
 
 	
 	
