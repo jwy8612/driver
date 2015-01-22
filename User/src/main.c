@@ -15,25 +15,32 @@
 
 #define TEST 1
 
+int sysFrequency;
 int main(void)
 {
-	SYS_INFO sysInfo;
 	CAR_INFO  carInfo;
+	RCC_ClocksTypeDef  clockInfo;
 	
-	deviceInit(&sysInfo);
+	deviceInit();
 	#if TEST
 
-	
-	RCC_GetClocksFreq(&(sysInfo.clockInfo));
-	// USART_SendData(USART1, 0x01);
+	RCC_GetClocksFreq(&clockInfo);
+	sysFrequency = clockInfo.SYSCLK_Frequency;
 
+	carInfo.udpSpeedIn = -50;
 	
+	carInfo.udpDirectIn = 0x0200;
+	carCal(&carInfo);
+	
+	carDirectOut(&carInfo);
 	#endif
 	while(1)
 	{
-		carCal(&carInfo);
-		carSpeedOut(&carInfo);
-		carDirectOut(&carInfo);
+		//carSpeedOut(&carInfo);
+		
+		//carDirectOut(&carInfo);
+		//USART_SendByte(USART1,0x01);
+
 	}
 
 	

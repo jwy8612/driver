@@ -1043,6 +1043,19 @@ void USART_ClearITPendingBit(USART_TypeDef* USARTx, uint16_t USART_IT)
   itmask = ((uint16_t)0x01 << (uint16_t)bitpos);
   USARTx->SR = (uint16_t)~itmask;
 }
+
+void USART_SendByte(USART_TypeDef* USARTx, unsigned char byte)   //串口发送一个字节
+
+{
+
+        USART_SendData(USARTx, byte);        //通过库函数  发送数据
+
+        while( USART_GetFlagStatus(USART1,USART_FLAG_TC)!= SET);  
+
+        //等待发送完成。   检测 USART_FLAG_TC 是否置1；    //见库函数 P359 介绍
+
+}
+
 /**
   * @}
   */

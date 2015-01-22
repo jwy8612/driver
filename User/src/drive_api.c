@@ -11,24 +11,44 @@
 ---------------------------------------------------------------------------------------------*/
 #include "typedef.h"
 #include <string.h>
-int deviceInit(SYS_INFO * sysInfo)
+int deviceInit(void)
 {
 	int ret =0;
-	 USART_InitTypeDef * usartInfo 	= &(sysInfo->usartInfo);	
-//	 EXTI_InitTypeDef *	 extiInfo 	= &(sysInfo->extiInfo);
-//	 GPIO_InitTypeDef * gpioInfo 	= &(sysInfo->gpioInfo);
-//	 NVIC_InitTypeDef * nvicInfo 	= &(sysInfo->nvicInfo);
-//	 RCC_ClocksTypeDef * clockInfo 	= &(sysInfo->clockInfo);
+	USART_InitTypeDef usartInfo;	
+//	EXTI_InitTypeDef 	 extiInfo;
+	GPIO_InitTypeDef  gpioInfo;
+//	NVIC_InitTypeDef  nvicInfo;
+
+		
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
+		
+	gpioInfo.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_3;
+	gpioInfo.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_Init(GPIOA, &gpioInfo);
+	  
+	gpioInfo.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_2;
+	gpioInfo.GPIO_Speed = GPIO_Speed_50MHz;
+	gpioInfo.GPIO_Mode = GPIO_Mode_AF_PP;
+	GPIO_Init(GPIOA, &gpioInfo);
 
 	USART_DeInit(USART1);
 	USART_DeInit(USART2);
-	USART_StructInit(usartInfo);
-	usartInfo->USART_BaudRate = 115200;
-	USART_Init(USART1, usartInfo);
-	USART_Init(USART2, usartInfo);
+	USART_StructInit(&usartInfo);
+	usartInfo.USART_BaudRate = 115200;
+	usartInfo.USART_WordLength = 8;
+	
+	USART_Init(USART1, &usartInfo);
+	USART_Init(USART2, &usartInfo);
 
-	SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK_Div8);
-	SysTick_Config(72000000 /100);
+	USART_Cmd(USART1, ENABLE);
+	USART_Cmd(USART2, ENABLE);
+	while( USART_GetFlagStatus(USART1,USART_FLAG_TC)!= SET);  
+	USART_ClearFlag(USART2,USART_FLAG_TC); 
+//	USART_ITConfig(USART1,USART_IT_RXNE,ENABLE);
+
+//	SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK_Div8);
+//	SysTick_Config(72000000 /100);
 	
 	return ret;
 }
@@ -36,20 +56,70 @@ int deviceInit(SYS_INFO * sysInfo)
 int carCal(CAR_INFO * carInfo)
 {
 	int ret = 0;
-	char * usartSpeedOut = carInfo->usartSpeedOut;
-	char * usartDirectOut = carInfo->usartDirectOut;
+	int i,j;
+	char * usartSpeedOut 	= carInfo->usartSpeedOut;
+	char * usartDirectOut 	= carInfo->usartDirectOut;
+	short udpSpeedIn 		= carInfo->udpSpeedIn;
+//	char udpSpeedOut 	= carInfo->udpSpeedOut;
+	short udpDirectIn 		= carInfo->udpDirectIn;
+//	char udpDirectOut 	= carInfo->udpDirectOut;
+	char r[5];
+	short y;
 
 	memset(usartSpeedOut, 0, 10);
 	memset(usartDirectOut, 0, 10);
-	
+//////////////////////////////////////////////////////////////
 	usartSpeedOut[0] = 0x76;//v
-	usartSpeedOut[1] = 0x30 + 5;
-	usartSpeedOut[2] = 0x30 + 0;
-	usartSpeedOut[3] = 0x30 + 0;
-	usartSpeedOut[4] = 0x00 + 0;
-	usartSpeedOut[5] = 0x0d;
-
+	if(udpSpeedIn > 0)
+	{	
+		y = udpSpeedIn * 120;
+		j = 1;
+	}
+	if(udpSpeedIn < 0)
+	{
+		y = -udpSpeedIn * 120;
+		usartSpeedOut[1] = 0x2d;//v
+		j = 2;
+	}
+	if(udpSpeedIn == 0)
+	{
+		y = 0;
+		usartSpeedOut[1] = 0x30;//v
+		j = 2;
+	}
 	
+	for(i = 4; i >= 0; i --)
+	{
+		r[i] = y % 10;
+		y = y / 10;
+	}
+	for(i = 0; i < 5; i++)
+	{
+		if(r[i])
+		{
+			break;
+		}
+	}
+	for( ; i < 5; i ++)
+	{
+		usartSpeedOut[j] = 0x30 + r[i];
+		j ++;
+	}
+	usartSpeedOut[j] = 0x0d;
+//////////////////////////////////////////////////////////////////	
+	usartDirectOut[0] = 0xff;
+	usartDirectOut[1] = 0xff;
+	usartDirectOut[2] = 0x00;
+	usartDirectOut[3] = 0x07;
+	usartDirectOut[4] = 0x03;
+	usartDirectOut[5] = 0x1e;
+	usartDirectOut[8] = 0x00;
+	usartDirectOut[9] = 0x02;
+
+	usartDirectOut[6] = udpDirectIn;
+	usartDirectOut[7] = udpDirectIn >> 8;
+	usartDirectOut[10] = ~(usartDirectOut[2] + usartDirectOut[3] + usartDirectOut[4] + usartDirectOut[5] + usartDirectOut[6] + usartDirectOut[7] + usartDirectOut[8] + usartDirectOut[9]); 
+
 
 	return ret;
 }
@@ -63,7 +133,7 @@ int carSpeedOut(CAR_INFO * carInfo)
 	{
 		if(usartSpeedOut[i])
 		{
-			USART_SendData(USART1,usartSpeedOut[i]);
+			USART_SendByte(USART1,usartSpeedOut[i]);
 		}
 	}
 
@@ -76,12 +146,9 @@ int carDirectOut(CAR_INFO * carInfo)
 	char i;
 	char * usartDirectOut = carInfo->usartDirectOut;
 
-	for(i = 0; i < 10; i ++)
+	for(i = 0; i < 11; i ++)
 	{
-		if(usartDirectOut[i])
-		{
-			USART_SendData(USART1,usartDirectOut[i]);
-		}
+		USART_SendByte(USART1,usartDirectOut[i]);
 	}
 
 	return ret;

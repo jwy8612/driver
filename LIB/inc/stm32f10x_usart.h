@@ -392,6 +392,8 @@ void USART_ClearFlag(USART_TypeDef* USARTx, uint16_t USART_FLAG);
 ITStatus USART_GetITStatus(USART_TypeDef* USARTx, uint16_t USART_IT);
 void USART_ClearITPendingBit(USART_TypeDef* USARTx, uint16_t USART_IT);
 
+void USART_SendByte(USART_TypeDef* USARTx, unsigned char byte);   //串口发送一个字节
+
 #ifdef __cplusplus
 }
 #endif

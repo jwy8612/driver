@@ -5,13 +5,13 @@
 
 typedef struct CAR_INFO
 {
-	char udpSpeedIn;
-	char udpSpeedOut;
+	short udpSpeedIn;
+	short udpSpeedOut;
 	char usartSpeedOut[10];
 	char usartSpeedIn[10];
-	char udpDirectIn;
+	short udpDirectIn;
 	char udpDirectOut;
-	char usartDirectOut[10];
+	char usartDirectOut[11];
 	char usartDirectIn[10];
 
 
