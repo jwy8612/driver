@@ -23,7 +23,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
+#include "typedef.h"
 
+extern CMD_PROCESS cmdProcess;
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
   */
@@ -134,6 +136,19 @@ void PendSV_Handler(void)
   */
 void SysTick_Handler(void)
 {
+}
+void USART1_IRQHandler(void)
+{
+	if((cmdProcess.doneFlag ==0)&&(USART_ReceiveData(USART1) == 0xff))
+		cmdProcess.recieveFlag = 1;
+	if(cmdProcess.recieveFlag == 1)
+		cmdProcess.datalength = USART_ReceiveData(USART1);
+	if(cmdProcess.datalength > 0)
+	{
+		cmdProcess.commandIn[cmdProcess.index] = USART_ReceiveData(USART1); 
+			USART_SendByte(USART1,cmdProcess.datalength);
+	}
+	//USART_SendByte(USART1,cmdProcess.recieveFlag);
 }
 
 /******************************************************************************/

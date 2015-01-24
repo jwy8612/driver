@@ -17,7 +17,7 @@ int deviceInit(void)
 	USART_InitTypeDef usartInfo;	
 //	EXTI_InitTypeDef 	 extiInfo;
 	GPIO_InitTypeDef  gpioInfo;
-//	NVIC_InitTypeDef  nvicInfo;
+	NVIC_InitTypeDef nvicInfo;
 
 		
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);
@@ -43,13 +43,20 @@ int deviceInit(void)
 
 	USART_Cmd(USART1, ENABLE);
 	USART_Cmd(USART2, ENABLE);
+	
+	USART_ITConfig(USART1,USART_IT_RXNE,ENABLE);
 	while( USART_GetFlagStatus(USART1,USART_FLAG_TC)!= SET);  
 	USART_ClearFlag(USART2,USART_FLAG_TC); 
-//	USART_ITConfig(USART1,USART_IT_RXNE,ENABLE);
 
 //	SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK_Div8);
 //	SysTick_Config(72000000 /100);
-	
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+	nvicInfo.NVIC_IRQChannel = USART1_IRQn;
+	nvicInfo.NVIC_IRQChannelPreemptionPriority = 0;
+	nvicInfo.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&nvicInfo);
+
+
 	return ret;
 }
 
@@ -59,7 +66,7 @@ int carCal(CAR_INFO * carInfo)
 	int i,j;
 	char * usartSpeedOut 	= carInfo->usartSpeedOut;
 	char * usartDirectOut 	= carInfo->usartDirectOut;
-	short udpSpeedIn 		= carInfo->udpSpeedIn;
+	signed char udpSpeedIn 		= carInfo->udpSpeedIn;
 //	char udpSpeedOut 	= carInfo->udpSpeedOut;
 	short udpDirectIn 		= carInfo->udpDirectIn;
 //	char udpDirectOut 	= carInfo->udpDirectOut;
@@ -68,6 +75,11 @@ int carCal(CAR_INFO * carInfo)
 
 	memset(usartSpeedOut, 0, 10);
 	memset(usartDirectOut, 0, 10);
+	
+	if(udpSpeedIn > 100)
+		udpSpeedIn = 100;
+	if(udpSpeedIn < -100)
+		udpSpeedIn = -100;
 //////////////////////////////////////////////////////////////
 	usartSpeedOut[0] = 0x76;//v
 	if(udpSpeedIn > 0)

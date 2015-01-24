@@ -11,28 +11,38 @@
 ---------------------------------------------------------------------------------------------*/
 #include "typedef.h"
 #include "drive_api.h"
+#include "string.h"
 
 
 #define TEST 1
+CMD_PROCESS cmdProcess;
+
 
 int sysFrequency;
+
+void Init()
+{
+	deviceInit();
+	memset(&cmdProcess, 0, sizeof(CMD_PROCESS));
+
+}
 int main(void)
 {
 	CAR_INFO  carInfo;
 	RCC_ClocksTypeDef  clockInfo;
 	
-	deviceInit();
+	Init();
 	#if TEST
 
 	RCC_GetClocksFreq(&clockInfo);
 	sysFrequency = clockInfo.SYSCLK_Frequency;
 
-	carInfo.udpSpeedIn = -50;
+	carInfo.udpSpeedIn = -100;
 	
 	carInfo.udpDirectIn = 0x0200;
-	carCal(&carInfo);
-	
-	carDirectOut(&carInfo);
+	//carCal(&carInfo);
+	//carSpeedOut(&carInfo);
+	//carDirectOut(&carInfo);
 	#endif
 	while(1)
 	{

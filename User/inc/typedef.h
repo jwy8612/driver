@@ -5,8 +5,8 @@
 
 typedef struct CAR_INFO
 {
-	short udpSpeedIn;
-	short udpSpeedOut;
+	signed char udpSpeedIn;
+	signed char udpSpeedOut;
 	char usartSpeedOut[10];
 	char usartSpeedIn[10];
 	short udpDirectIn;
@@ -28,5 +28,13 @@ typedef struct SYS_INFO
 
 }SYS_INFO;
 
-
+typedef struct CMD_PROCESS
+{
+	char commandIn[50];
+	char doneFlag;
+	char recieveFlag;
+	char datalength;
+	char index;
+}CMD_PROCESS;
 #endif 
+
