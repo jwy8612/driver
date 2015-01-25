@@ -53,14 +53,7 @@ int main(void)
 		//USART_SendByte(USART1,0x01);
 		if(cmdProcess.doneFlag == 1)
 		{
-			for(i = 0; i <cmdProcess.datalength; i ++)
-			{
-				USART_SendByte(USART1,cmdProcess.commandIn[i]);
-
-			}
-			
-			cmdProcess.datalength = 0;
-			cmdProcess.doneFlag= 0;
+			cmdTrans(&carInfo);
 		}
 			
 

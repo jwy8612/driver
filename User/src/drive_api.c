@@ -11,6 +11,8 @@
 ---------------------------------------------------------------------------------------------*/
 #include "typedef.h"
 #include <string.h>
+
+extern CMD_PROCESS cmdProcess;
 int deviceInit(void)
 {
 	int ret =0;
@@ -165,3 +167,18 @@ int carDirectOut(CAR_INFO * carInfo)
 
 	return ret;
 }
+
+void cmdTrans(CAR_INFO * carInfo)
+{
+	int i;
+
+for(i = 0;i < 100000; i ++);
+	USART_Cmd(USART1, ENABLE);
+	for(i = 0; i <cmdProcess.datalength; i ++)
+	{
+		USART_SendByte(USART1,cmdProcess.commandIn[i]);
+	}
+
+	memset(&cmdProcess,0,sizeof(CMD_PROCESS));
+}
+

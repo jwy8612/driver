@@ -142,6 +142,7 @@ void USART1_IRQHandler(void)
 	int i;
 	if((cmdProcess.index == cmdProcess.datalength)&&(USART_ReceiveData(USART1) == 0x80))
 	{
+		USART_Cmd(USART1, DISABLE);
 		cmdProcess.doneFlag =1;
 		cmdProcess.index = 0;
 		cmdProcess.recieveFlag = 0;

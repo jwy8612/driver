@@ -5,6 +5,7 @@ int deviceInit(void);
 int carCal(CAR_INFO * carInfo);
 int carSpeedOut(CAR_INFO * carInfo);
 int carDirectOut(CAR_INFO * carInfo);
+void cmdTrans(CAR_INFO * carInfo);
 
 
 
