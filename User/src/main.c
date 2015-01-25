@@ -30,6 +30,7 @@ int main(void)
 {
 	CAR_INFO  carInfo;
 	RCC_ClocksTypeDef  clockInfo;
+	int i;
 	
 	Init();
 	#if TEST
@@ -50,6 +51,18 @@ int main(void)
 		
 		//carDirectOut(&carInfo);
 		//USART_SendByte(USART1,0x01);
+		if(cmdProcess.doneFlag == 1)
+		{
+			for(i = 0; i <cmdProcess.datalength; i ++)
+			{
+				USART_SendByte(USART1,cmdProcess.commandIn[i]);
+
+			}
+			
+			cmdProcess.datalength = 0;
+			cmdProcess.doneFlag= 0;
+		}
+			
 
 	}
 

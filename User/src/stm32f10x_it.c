@@ -138,17 +138,27 @@ void SysTick_Handler(void)
 {
 }
 void USART1_IRQHandler(void)
-{
-	if((cmdProcess.doneFlag ==0)&&(USART_ReceiveData(USART1) == 0xff))
-		cmdProcess.recieveFlag = 1;
-	if(cmdProcess.recieveFlag == 1)
-		cmdProcess.datalength = USART_ReceiveData(USART1);
-	if(cmdProcess.datalength > 0)
+{	
+	int i;
+	if((cmdProcess.index == cmdProcess.datalength)&&(USART_ReceiveData(USART1) == 0x80))
+	{
+		cmdProcess.doneFlag =1;
+		cmdProcess.index = 0;
+		cmdProcess.recieveFlag = 0;
+	}
+	if((cmdProcess.datalength > 0)&&(cmdProcess.index < cmdProcess.datalength)&&(cmdProcess.doneFlag == 0))
 	{
 		cmdProcess.commandIn[cmdProcess.index] = USART_ReceiveData(USART1); 
-			USART_SendByte(USART1,cmdProcess.datalength);
+		cmdProcess.index ++;
 	}
-	//USART_SendByte(USART1,cmdProcess.recieveFlag);
+	if(cmdProcess.recieveFlag == 1)
+	{
+		cmdProcess.datalength = USART_ReceiveData(USART1);
+		cmdProcess.recieveFlag = 0;
+	}
+	if((cmdProcess.doneFlag ==0)&&(USART_ReceiveData(USART1) == 0xff))
+		cmdProcess.recieveFlag = 1;
+	
 }
 
 /******************************************************************************/
