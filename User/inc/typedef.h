@@ -35,6 +35,7 @@ typedef struct CMD_PROCESS
 	char recieveFlag;
 	char datalength;
 	char index;
+	char lengthFlag;
 }CMD_PROCESS;
 #endif 
 

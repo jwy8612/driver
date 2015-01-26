@@ -24,6 +24,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
 #include "typedef.h"
+#include "string.h"
 
 extern CMD_PROCESS cmdProcess;
 /** @addtogroup STM32F10x_StdPeriph_Template
@@ -140,25 +141,31 @@ void SysTick_Handler(void)
 void USART1_IRQHandler(void)
 {	
 	int i;
-	if((cmdProcess.index == cmdProcess.datalength)&&(USART_ReceiveData(USART1) == 0x80))
+	if((cmdProcess.index == cmdProcess.datalength)&&(cmdProcess.datalength > 0))
 	{
-		USART_Cmd(USART1, DISABLE);
-		cmdProcess.doneFlag =1;
-		cmdProcess.index = 0;
-		cmdProcess.recieveFlag = 0;
+		if(USART_ReceiveData(USART1) == 0x80)
+		{
+			USART_Cmd(USART1, DISABLE);
+			cmdProcess.doneFlag =1;
+		}
+		else
+		{
+			memset(&cmdProcess, 0 , sizeof(CMD_PROCESS));
+		}
 	}
 	if((cmdProcess.datalength > 0)&&(cmdProcess.index < cmdProcess.datalength)&&(cmdProcess.doneFlag == 0))
 	{
 		cmdProcess.commandIn[cmdProcess.index] = USART_ReceiveData(USART1); 
 		cmdProcess.index ++;
 	}
-	if(cmdProcess.recieveFlag == 1)
+	if(cmdProcess.lengthFlag == 1)
 	{
 		cmdProcess.datalength = USART_ReceiveData(USART1);
-		cmdProcess.recieveFlag = 0;
-	}
-	if((cmdProcess.doneFlag ==0)&&(USART_ReceiveData(USART1) == 0xff))
 		cmdProcess.recieveFlag = 1;
+		cmdProcess.lengthFlag = 0;
+	}
+	if((cmdProcess.doneFlag ==0)&&(USART_ReceiveData(USART1) == 0xff)&&(cmdProcess.lengthFlag == 0)&&(cmdProcess.recieveFlag == 0))
+		cmdProcess.lengthFlag = 1;
 	
 }
 

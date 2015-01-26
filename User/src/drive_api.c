@@ -170,15 +170,23 @@ int carDirectOut(CAR_INFO * carInfo)
 
 void cmdTrans(CAR_INFO * carInfo)
 {
-	int i;
+	int i = 0;
 
-for(i = 0;i < 100000; i ++);
-	USART_Cmd(USART1, ENABLE);
-	for(i = 0; i <cmdProcess.datalength; i ++)
+	//for(i = 0;i < 100000; i ++);
+	
+//	USART_Cmd(USART1, ENABLE);
+	USART_SendByte(USART1,cmdProcess.commandIn[i]);
+	if(i <= cmdProcess.datalength)
 	{
-		USART_SendByte(USART1,cmdProcess.commandIn[i]);
-	}
+		if(cmdProcess.commandIn[i] == 1)
+		{
 
+		}
+		else
+		{
+			i ++;
+		}
+	}
 	memset(&cmdProcess,0,sizeof(CMD_PROCESS));
 }
 
