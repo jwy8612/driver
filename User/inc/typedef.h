@@ -9,7 +9,7 @@ typedef struct CAR_INFO
 	signed char udpSpeedOut;
 	char usartSpeedOut[10];
 	char usartSpeedIn[10];
-	int   udpDirectIn;
+	unsigned int   udpDirectIn;
 	char udpDirectOut;
 	char usartDirectOut[11];
 	char usartDirectIn[10];

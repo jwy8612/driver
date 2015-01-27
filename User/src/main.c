@@ -39,26 +39,17 @@ int main(void)
 
 	RCC_GetClocksFreq(&clockInfo);
 	sysFrequency = clockInfo.SYSCLK_Frequency;
+	carInfo.udpDirectIn = 0x11111111;
 
-	//carInfo.udpSpeedIn = -100;
-	
-	//carInfo.udpDirectIn = 0x0200;
-	//carCal(&carInfo);
-	//carSpeedOut(&carInfo);
-	//carDirectOut(&carInfo);
 	#endif
 	while(1)
 	{
-		//carSpeedOut(&carInfo);
-		
-		//carDirectOut(&carInfo);
-		//USART_SendByte(USART1,0x01);
 		if(cmdProcess.doneFlag == 1)
-		{
+		{	
 			cmdTrans(&carInfo);
 			carCal(&carInfo);
 			carSpeedOut(&carInfo);
-			carSpeedOut(&carInfo);
+			carDirectOut(&carInfo);
 		}
 			
 

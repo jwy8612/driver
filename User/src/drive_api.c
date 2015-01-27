@@ -70,7 +70,7 @@ int carCal(CAR_INFO * carInfo)
 	char * usartDirectOut 	= carInfo->usartDirectOut;
 	signed char udpSpeedIn 		= carInfo->udpSpeedIn;
 //	char udpSpeedOut 	= carInfo->udpSpeedOut;
-	int udpDirectIn 		= carInfo->udpDirectIn;
+	unsigned int udpDirectIn 		= carInfo->udpDirectIn;
 //	char udpDirectOut 	= carInfo->udpDirectOut;
 	char r[5];
 	short y;
@@ -92,13 +92,13 @@ int carCal(CAR_INFO * carInfo)
 	if(udpSpeedIn < 0)
 	{
 		y = -udpSpeedIn * 120;
-		usartSpeedOut[1] = 0x2d;//v
+		usartSpeedOut[1] = 0x2d;
 		j = 2;
 	}
 	if(udpSpeedIn == 0)
 	{
 		y = 0;
-		usartSpeedOut[1] = 0x30;//v
+		usartSpeedOut[1] = 0x30;
 		j = 2;
 	}
 	
@@ -127,13 +127,11 @@ int carCal(CAR_INFO * carInfo)
 	usartDirectOut[3] = 0x07;
 	usartDirectOut[4] = 0x03;
 	usartDirectOut[5] = 0x1e;
-//	usartDirectOut[8] = 0x00;
-//	usartDirectOut[9] = 0x02;
 
 	usartDirectOut[6] = udpDirectIn;
 	usartDirectOut[7] = udpDirectIn >> 8;
-	usartDirectOut[8] = udpDirectIn >> 8;
-	usartDirectOut[9] = udpDirectIn >> 8;
+	usartDirectOut[8] = udpDirectIn >> 16;
+	usartDirectOut[9] = udpDirectIn >>24;
 	usartDirectOut[10] = ~(usartDirectOut[2] + usartDirectOut[3] + usartDirectOut[4] + usartDirectOut[5] + usartDirectOut[6] + usartDirectOut[7] + usartDirectOut[8] + usartDirectOut[9]); 
 
 
@@ -174,12 +172,6 @@ void cmdTrans(CAR_INFO * carInfo)
 {
 	int i = 0;
 
-	//for(i = 0;i < 100000; i ++);
-	
-//	USART_Cmd(USART1, ENABLE);
-	USART_SendByte(USART1,cmdProcess.commandIn[i]);
-	if(i <= cmdProcess.datalength)
-	{
 		if(cmdProcess.commandIn[i] == 1)
 		{
 			i ++;
@@ -192,10 +184,13 @@ void cmdTrans(CAR_INFO * carInfo)
 			{
 			//其他电机指令类型待定义
 			}
+			i ++;
 		}
 		else
 		{
 			i ++;
+			
+			USART_SendByte(USART1,0x77);
 		}
 		if(cmdProcess.commandIn[i] == 1)
 		{
@@ -203,13 +198,13 @@ void cmdTrans(CAR_INFO * carInfo)
 			if(cmdProcess.commandIn[i] == 1)
 			{
 				i ++;
-				memcpy(&(carInfo->udpDirectIn),&(cmdProcess.commandIn[i]),4)
+				memcpy(&(carInfo->udpDirectIn),&(cmdProcess.commandIn[i]),4);
 			}
 			else
 			{
 			//其他舵机指令类型待定义
 			}
-
+			i +=4;
 		}
 		else
 		{
@@ -231,7 +226,7 @@ void cmdTrans(CAR_INFO * carInfo)
 		{
 			i ++;
 		}
-	}
+	
 	USART_Cmd(USART1, ENABLE);
 	memset(&cmdProcess,0,sizeof(CMD_PROCESS));
 }
