@@ -127,11 +127,13 @@ int carCal(CAR_INFO * carInfo)
 	usartDirectOut[3] = 0x07;
 	usartDirectOut[4] = 0x03;
 	usartDirectOut[5] = 0x1e;
-	usartDirectOut[8] = 0x00;
-	usartDirectOut[9] = 0x02;
+//	usartDirectOut[8] = 0x00;
+//	usartDirectOut[9] = 0x02;
 
 	usartDirectOut[6] = udpDirectIn;
 	usartDirectOut[7] = udpDirectIn >> 8;
+	usartDirectOut[8] = udpDirectIn >> 8;
+	usartDirectOut[9] = udpDirectIn >> 8;
 	usartDirectOut[10] = ~(usartDirectOut[2] + usartDirectOut[3] + usartDirectOut[4] + usartDirectOut[5] + usartDirectOut[6] + usartDirectOut[7] + usartDirectOut[8] + usartDirectOut[9]); 
 
 
@@ -180,13 +182,57 @@ void cmdTrans(CAR_INFO * carInfo)
 	{
 		if(cmdProcess.commandIn[i] == 1)
 		{
+			i ++;
+			if(cmdProcess.commandIn[i] == 1)
+			{
+				i ++;
+				carInfo->udpSpeedIn = cmdProcess.commandIn[i];
+			}
+			else
+			{
+			//其他电机指令类型待定义
+			}
+		}
+		else
+		{
+			i ++;
+		}
+		if(cmdProcess.commandIn[i] == 1)
+		{
+			i ++;
+			if(cmdProcess.commandIn[i] == 1)
+			{
+				i ++;
+				memcpy(&(carInfo->udpDirectIn),&(cmdProcess.commandIn[i]),4)
+			}
+			else
+			{
+			//其他舵机指令类型待定义
+			}
 
 		}
 		else
 		{
 			i ++;
 		}
+		if(cmdProcess.commandIn[i] == 1)
+		{
+			i ++;
+		}
+		else
+		{
+			i ++;
+		}
+		if(cmdProcess.commandIn[i] == 1)
+		{
+			i ++;
+		}
+		else
+		{
+			i ++;
+		}
 	}
+	USART_Cmd(USART1, ENABLE);
 	memset(&cmdProcess,0,sizeof(CMD_PROCESS));
 }
 
