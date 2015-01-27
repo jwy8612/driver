@@ -33,14 +33,16 @@ int main(void)
 	int i;
 	
 	Init();
+	memset(&carInfo,0,sizeof(CAR_INFO));
+
 	#if TEST
 
 	RCC_GetClocksFreq(&clockInfo);
 	sysFrequency = clockInfo.SYSCLK_Frequency;
 
-	carInfo.udpSpeedIn = -100;
+	//carInfo.udpSpeedIn = -100;
 	
-	carInfo.udpDirectIn = 0x0200;
+	//carInfo.udpDirectIn = 0x0200;
 	//carCal(&carInfo);
 	//carSpeedOut(&carInfo);
 	//carDirectOut(&carInfo);
@@ -54,6 +56,9 @@ int main(void)
 		if(cmdProcess.doneFlag == 1)
 		{
 			cmdTrans(&carInfo);
+			carCal(&carInfo);
+			carSpeedOut(&carInfo);
+			carSpeedOut(&carInfo);
 		}
 			
 

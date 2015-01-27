@@ -70,7 +70,7 @@ int carCal(CAR_INFO * carInfo)
 	char * usartDirectOut 	= carInfo->usartDirectOut;
 	signed char udpSpeedIn 		= carInfo->udpSpeedIn;
 //	char udpSpeedOut 	= carInfo->udpSpeedOut;
-	short udpDirectIn 		= carInfo->udpDirectIn;
+	int udpDirectIn 		= carInfo->udpDirectIn;
 //	char udpDirectOut 	= carInfo->udpDirectOut;
 	char r[5];
 	short y;
