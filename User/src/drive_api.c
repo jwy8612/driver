@@ -60,8 +60,8 @@ int deviceInit(void)
 	
 	USART_ITConfig(USART1,USART_IT_RXNE,ENABLE);
 	while( USART_GetFlagStatus(USART1,USART_FLAG_TC)!= SET);  
-	USART_ClearFlag(USART2,USART_FLAG_TC); 
-	USART_ClearFlag(USART3,USART_FLAG_TC); 
+	while( USART_GetFlagStatus(USART2,USART_FLAG_TC)!= SET);  
+	while( USART_GetFlagStatus(USART3,USART_FLAG_TC)!= SET);  
 	
 
 //	SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK_Div8);
@@ -161,7 +161,7 @@ int carSpeedOut(CAR_INFO * carInfo)
 	{
 		if(usartSpeedOut[i])
 		{
-			USART_SendByte(USART1,usartSpeedOut[i]);
+			USART_SendByte(USART2,usartSpeedOut[i]);
 		}
 	}
 
@@ -176,7 +176,7 @@ int carDirectOut(CAR_INFO * carInfo)
 
 	for(i = 0; i < 11; i ++)
 	{
-		USART_SendByte(USART1,usartDirectOut[i]);
+		USART_SendByte(USART3,usartDirectOut[i]);
 	}
 
 	return ret;

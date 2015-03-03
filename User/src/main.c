@@ -51,7 +51,6 @@ int main(void)
 			carSpeedOut(&carInfo);
 			carDirectOut(&carInfo);
 		}
-			
 
 	}
 

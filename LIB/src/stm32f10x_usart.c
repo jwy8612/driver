@@ -1050,7 +1050,7 @@ void USART_SendByte(USART_TypeDef* USARTx, unsigned char byte)   //´®¿Ú·¢ËÍÒ»¸ö×
 
         USART_SendData(USARTx, byte);        //Í¨¹ý¿âº¯Êý  ·¢ËÍÊý¾Ý
 
-        while( USART_GetFlagStatus(USART1,USART_FLAG_TC)!= SET);  
+        while( USART_GetFlagStatus(USARTx,USART_FLAG_TC)!= SET);  
 
         //µÈ´ý·¢ËÍÍê³É¡£   ¼ì²â USART_FLAG_TC ÊÇ·ñÖÃ1£»    //¼û¿âº¯Êý P359 ½éÉÜ
 
