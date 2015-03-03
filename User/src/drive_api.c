@@ -22,33 +22,47 @@ int deviceInit(void)
 	NVIC_InitTypeDef nvicInfo;
 
 		
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA |RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_USART3, ENABLE);
 		
 	gpioInfo.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_3;
 	gpioInfo.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_Init(GPIOA, &gpioInfo);
+	
+	gpioInfo.GPIO_Pin = GPIO_Pin_11;
+	gpioInfo.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_Init(GPIOB, &gpioInfo);
 	  
 	gpioInfo.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_2;
 	gpioInfo.GPIO_Speed = GPIO_Speed_50MHz;
 	gpioInfo.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_Init(GPIOA, &gpioInfo);
 
+	gpioInfo.GPIO_Pin = GPIO_Pin_10;
+	gpioInfo.GPIO_Speed = GPIO_Speed_50MHz;
+	gpioInfo.GPIO_Mode = GPIO_Mode_AF_PP;
+	GPIO_Init(GPIOB, &gpioInfo);
+
 	USART_DeInit(USART1);
 	USART_DeInit(USART2);
+	USART_DeInit(USART3);
 	USART_StructInit(&usartInfo);
 	usartInfo.USART_BaudRate = 115200;
 	usartInfo.USART_WordLength = 8;
 	
 	USART_Init(USART1, &usartInfo);
 	USART_Init(USART2, &usartInfo);
-
+	USART_Init(USART3, &usartInfo);
+	
 	USART_Cmd(USART1, ENABLE);
 	USART_Cmd(USART2, ENABLE);
+	USART_Cmd(USART3, ENABLE);
 	
 	USART_ITConfig(USART1,USART_IT_RXNE,ENABLE);
 	while( USART_GetFlagStatus(USART1,USART_FLAG_TC)!= SET);  
 	USART_ClearFlag(USART2,USART_FLAG_TC); 
+	USART_ClearFlag(USART3,USART_FLAG_TC); 
+	
 
 //	SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK_Div8);
 //	SysTick_Config(72000000 /100);
